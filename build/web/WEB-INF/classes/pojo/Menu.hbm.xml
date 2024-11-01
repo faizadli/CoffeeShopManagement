@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 1, 2024 1:24:35 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="pojo.Menu" table="menu" catalog="coffee_shop" optimistic-lock="version">
+        <id name="menuId" type="java.lang.Integer">
+            <column name="menu_id" />
+            <generator class="identity" />
+        </id>
+        <property name="name" type="string">
+            <column name="name" length="100" not-null="true" />
+        </property>
+        <property name="description" type="string">
+            <column name="description" length="65535" />
+        </property>
+        <property name="price" type="big_decimal">
+            <column name="price" precision="10" not-null="true" />
+        </property>
+        <property name="category" type="string">
+            <column name="category" length="50" />
+        </property>
+        <property name="available" type="java.lang.Boolean">
+            <column name="available" />
+        </property>
+        <property name="createdAt" type="timestamp">
+            <column name="created_at" length="19" not-null="true" />
+        </property>
+        <set name="orderses" table="orders" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="menu_id" />
+            </key>
+            <one-to-many class="pojo.Orders" />
+        </set>
+    </class>
+</hibernate-mapping>

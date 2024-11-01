@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>UserBean.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;CoffeeShopManagement&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">beans</a> &gt; <span class="el_source">UserBean.java</span></div><h1>UserBean.java</h1><pre class="source lang-java linenums">package beans;
+
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.SessionScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import pojo.Users;
+import DAO.DAOUser;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.faces.application.NavigationHandler;
+import javax.servlet.http.HttpSession;
+import org.hibernate.Session;
+import pojo.CoffeShopUtil;
+
+@ManagedBean
+@SessionScoped
+public class UserBean {
+
+<span class="fc" id="L21">    private static final Logger logger = Logger.getLogger(UserBean.class.getName());</span>
+
+    private String name;
+    private String email;
+    private String password;
+    private String phoneNumber;
+    private Users currentUser;
+
+    private DAOUser daoUser;
+
+<span class="fc" id="L31">    public UserBean() {</span>
+<span class="fc" id="L32">        daoUser = new DAOUser();</span>
+<span class="fc" id="L33">    }</span>
+
+    public String login() {
+<span class="fc" id="L36">        Session session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L37">        logger.info(&quot;Attempting to log in user: &quot; + email);</span>
+        try {
+<span class="fc" id="L39">            Users user = daoUser.findByEmail(email);</span>
+<span class="pc bpc" id="L40" title="1 of 4 branches missed.">            if (user != null &amp;&amp; user.getPassword().equals(password)) {</span>
+<span class="fc" id="L41">                HttpSession httpSession = (HttpSession) FacesContext.getCurrentInstance()</span>
+<span class="fc" id="L42">                        .getExternalContext().getSession(true);</span>
+<span class="fc" id="L43">                httpSession.setAttribute(&quot;loggedInUser&quot;, user);</span>
+<span class="fc" id="L44">                httpSession.setAttribute(&quot;userId&quot;, user.getUserId());</span>
+
+                // Inisialisasi currentUser
+<span class="fc" id="L47">                this.currentUser = user;</span>
+
+<span class="fc" id="L49">                logger.info(&quot;User logged in successfully: &quot; + email);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">                if (&quot;customer&quot;.equals(user.getRole())) {</span>
+<span class="fc" id="L51">                    return &quot;profile?faces-redirect=true&quot;;</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">                } else if (&quot;admin&quot;.equals(user.getRole())) {</span>
+<span class="fc" id="L53">                    return &quot;dashboard?faces-redirect=true&quot;;</span>
+                }
+<span class="nc" id="L55">            } else {</span>
+<span class="fc" id="L56">                return &quot;login?faces-redirect=true&quot;;</span>
+            }
+        } finally {
+<span class="pc" id="L59">            session.close();</span>
+<span class="nc" id="L60">        }</span>
+<span class="nc" id="L61">        return null;</span>
+    }
+
+    public String logout() {
+<span class="fc" id="L65">        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        logger.info(&quot;User logged out: &quot; + (currentUser != null ? currentUser.getEmail() : &quot;unknown&quot;));</span>
+<span class="fc" id="L67">        currentUser = null;</span>
+<span class="fc" id="L68">        return &quot;login?faces-redirect=true&quot;;</span>
+    }
+
+    public String register() {
+<span class="fc" id="L72">        logger.info(&quot;Attempting to register user: &quot; + email);</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (!isValidInput()) {</span>
+<span class="fc" id="L75">            return null;</span>
+        }
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (daoUser.findByEmail(email) != null) {</span>
+<span class="fc" id="L79">            FacesContext.getCurrentInstance().addMessage(null,</span>
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Registration failed&quot;, &quot;Email already exists&quot;));
+<span class="fc" id="L81">            logger.warning(&quot;Registration failed: Email already exists - &quot; + email);</span>
+<span class="fc" id="L82">            return null;</span>
+        }
+
+<span class="fc" id="L85">        Users user = new Users(name, email, password, phoneNumber, &quot;customer&quot;);</span>
+
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (daoUser.save(user)) {</span>
+<span class="fc" id="L88">            FacesContext.getCurrentInstance().addMessage(null,</span>
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, &quot;Registration successful&quot;, &quot;You can now login&quot;));
+<span class="fc" id="L90">            logger.info(&quot;User registered successfully: &quot; + email);</span>
+<span class="fc" id="L91">            return &quot;login?faces-redirect=true&quot;;</span>
+        } else {
+<span class="nc" id="L93">            FacesContext.getCurrentInstance().addMessage(null,</span>
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Registration failed&quot;, &quot;Please try again&quot;));
+<span class="nc" id="L95">            logger.severe(&quot;Registration failed for user: &quot; + email);</span>
+<span class="nc" id="L96">            return null;</span>
+        }
+    }
+
+    private boolean isValidInput() {
+<span class="pc bpc" id="L101" title="3 of 6 branches missed.">        if (name == null || name.trim().isEmpty()</span>
+<span class="pc bpc" id="L102" title="1 of 4 branches missed.">                || email == null || email.trim().isEmpty()</span>
+<span class="pc bpc" id="L103" title="2 of 4 branches missed.">                || password == null || password.trim().isEmpty()</span>
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">                || phoneNumber == null || phoneNumber.trim().isEmpty()) {</span>
+
+<span class="fc" id="L106">            FacesContext.getCurrentInstance().addMessage(null,</span>
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Registration failed&quot;, &quot;All fields are required&quot;));
+<span class="fc" id="L108">            logger.warning(&quot;Registration failed: Invalid input&quot;);</span>
+<span class="fc" id="L109">            return false;</span>
+        }
+<span class="fc" id="L111">        return true;</span>
+    }
+
+    public void checkIfLoggedIn() {
+<span class="fc" id="L115">        HttpSession session = (HttpSession) FacesContext.getCurrentInstance()</span>
+<span class="fc" id="L116">                .getExternalContext().getSession(false);</span>
+
+        // Cek apakah ada user yang sudah login di session
+<span class="pc bpc" id="L119" title="1 of 4 branches missed.">        if (session != null &amp;&amp; session.getAttribute(&quot;loggedInUser&quot;) != null) {</span>
+            // Gunakan NavigationHandler untuk redirect
+<span class="fc" id="L121">            FacesContext fc = FacesContext.getCurrentInstance();</span>
+<span class="fc" id="L122">            NavigationHandler navHandler = fc.getApplication().getNavigationHandler();</span>
+<span class="fc" id="L123">            navHandler.handleNavigation(fc, null, &quot;profile?faces-redirect=true&quot;);</span>
+        }
+<span class="fc" id="L125">    }</span>
+
+    // Getters and setters
+    public String getName() {
+<span class="fc" id="L129">        return name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L133">        this.name = name;</span>
+<span class="fc" id="L134">    }</span>
+
+    public String getEmail() {
+<span class="fc" id="L137">        return email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="fc" id="L141">        this.email = email;</span>
+<span class="fc" id="L142">    }</span>
+
+    public String getPassword() {
+<span class="fc" id="L145">        return password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="fc" id="L149">        this.password = password;</span>
+<span class="fc" id="L150">    }</span>
+
+    public String getPhoneNumber() {
+<span class="fc" id="L153">        return phoneNumber;</span>
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+<span class="fc" id="L157">        this.phoneNumber = phoneNumber;</span>
+<span class="fc" id="L158">    }</span>
+
+    public Users getCurrentUser() {
+<span class="fc" id="L161">        return currentUser;</span>
+    }
+
+    public void setCurrentUser(Users currentUser) {
+<span class="fc" id="L165">        this.currentUser = currentUser;</span>
+<span class="fc" id="L166">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

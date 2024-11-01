@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DAOOrders.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;CoffeeShopManagement&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">DAO</a> &gt; <span class="el_source">DAOOrders.java</span></div><h1>DAOOrders.java</h1><pre class="source lang-java linenums">package DAO;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import java.util.List;
+import org.hibernate.Query;
+import pojo.CoffeShopUtil;
+import pojo.Orders;
+import javax.faces.context.FacesContext;
+import javax.faces.application.FacesMessage;
+
+<span class="fc" id="L12">public class DAOOrders {</span>
+
+    public void save(Orders order) {
+<span class="fc" id="L15">        Transaction transaction = null;</span>
+<span class="fc" id="L16">        Session session = null;</span>
+        try {
+<span class="fc" id="L18">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L19">            transaction = session.beginTransaction();</span>
+<span class="fc" id="L20">            session.save(order);</span>
+<span class="fc" id="L21">            transaction.commit();</span>
+
+<span class="fc" id="L23">            FacesContext.getCurrentInstance().addMessage(null,</span>
+                    new FacesMessage(FacesMessage.SEVERITY_INFO, &quot;Success&quot;, &quot;Order berhasil disimpan&quot;));
+<span class="fc" id="L25">            FacesContext.getCurrentInstance().getExternalContext().redirect(&quot;OrderData.xhtml&quot;);</span>
+<span class="fc" id="L26">        } catch (Exception e) {</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">            if (transaction != null) {</span>
+<span class="fc" id="L28">                transaction.rollback();</span>
+            }
+<span class="fc" id="L30">            e.printStackTrace();</span>
+
+<span class="fc" id="L32">            FacesContext.getCurrentInstance().addMessage(null,</span>
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Gagal menyimpan order&quot;));
+        } finally {
+<span class="pc bpc" id="L35" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L36">                session.close();</span>
+            }
+        }
+<span class="fc" id="L39">    }</span>
+
+    public List&lt;Orders&gt; findAll() {
+<span class="fc" id="L42">        Session session = null;</span>
+        try {
+<span class="fc" id="L44">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L45">            String hql = &quot;FROM Orders&quot;;</span>
+<span class="fc" id="L46">            Query query = session.createQuery(hql);</span>
+<span class="fc" id="L47">            List&lt;Orders&gt; orderList = query.list();</span>
+<span class="fc" id="L48">            return orderList;</span>
+<span class="fc" id="L49">        } catch (Exception e) {</span>
+<span class="fc" id="L50">            e.printStackTrace();</span>
+<span class="fc" id="L51">            return null;</span>
+        } finally {
+<span class="pc bpc" id="L53" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L54">                session.close();</span>
+            }
+        }
+    }
+
+    public List&lt;Orders&gt; findPendingOrders() {
+<span class="fc" id="L60">        Session session = null;</span>
+        try {
+<span class="fc" id="L62">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L63">            String hql = &quot;SELECT DISTINCT o FROM Orders o &quot;</span>
+                    + &quot;LEFT JOIN FETCH o.users &quot;
+                    + &quot;LEFT JOIN FETCH o.menu &quot;
+                    + &quot;WHERE o.status = 'pending'&quot;;
+<span class="fc" id="L67">            Query query = session.createQuery(hql);</span>
+<span class="fc" id="L68">            List&lt;Orders&gt; pendingOrderList = query.list();</span>
+<span class="fc" id="L69">            return pendingOrderList;</span>
+<span class="fc" id="L70">        } catch (Exception e) {</span>
+<span class="fc" id="L71">            e.printStackTrace();</span>
+<span class="fc" id="L72">            return null;</span>
+        } finally {
+<span class="pc bpc" id="L74" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L75">                session.close();</span>
+            }
+        }
+    }
+    
+    public List&lt;Orders&gt; findCompletedOrders() {
+<span class="fc" id="L81">        Session session = null;</span>
+        try {
+<span class="fc" id="L83">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L84">            String hql = &quot;SELECT DISTINCT o FROM Orders o &quot;</span>
+                    + &quot;LEFT JOIN FETCH o.users &quot;
+                    + &quot;LEFT JOIN FETCH o.menu &quot;
+                    + &quot;WHERE o.status = 'completed'&quot;;
+<span class="fc" id="L88">            Query query = session.createQuery(hql);</span>
+<span class="fc" id="L89">            List&lt;Orders&gt; completedOrderList = query.list();</span>
+<span class="fc" id="L90">            return completedOrderList;</span>
+<span class="fc" id="L91">        } catch (Exception e) {</span>
+<span class="fc" id="L92">            e.printStackTrace();</span>
+<span class="fc" id="L93">            return null;</span>
+        } finally {
+<span class="pc bpc" id="L95" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L96">                session.close();</span>
+            }
+        }
+    }
+
+    public Orders findById(Long orderId) {
+<span class="fc" id="L102">        Session session = null;</span>
+        try {
+<span class="fc" id="L104">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L105">            Orders order = (Orders) session.get(Orders.class, orderId);</span>
+<span class="fc" id="L106">            return order;</span>
+<span class="fc" id="L107">        } catch (Exception e) {</span>
+<span class="fc" id="L108">            e.printStackTrace();</span>
+<span class="fc" id="L109">            return null;</span>
+        } finally {
+<span class="pc bpc" id="L111" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L112">                session.close();</span>
+            }
+        }
+    }
+
+    public void update(Orders order) {
+<span class="fc" id="L118">        Transaction transaction = null;</span>
+<span class="fc" id="L119">        Session session = null;</span>
+        try {
+<span class="fc" id="L121">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L122">            transaction = session.beginTransaction();</span>
+<span class="fc" id="L123">            session.update(order);</span>
+<span class="fc" id="L124">            transaction.commit();</span>
+<span class="fc" id="L125">        } catch (Exception e) {</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">            if (transaction != null) {</span>
+<span class="fc" id="L127">                transaction.rollback();</span>
+            }
+<span class="fc" id="L129">            e.printStackTrace();</span>
+        } finally {
+<span class="pc bpc" id="L131" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L132">                session.close();</span>
+            }
+        }
+<span class="fc" id="L135">    }</span>
+
+    public void delete(Long orderId) {
+<span class="fc" id="L138">        Transaction transaction = null;</span>
+<span class="fc" id="L139">        Session session = null;</span>
+        try {
+<span class="fc" id="L141">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L142">            transaction = session.beginTransaction();</span>
+<span class="fc" id="L143">            Orders order = (Orders) session.get(Orders.class, orderId);</span>
+<span class="pc bpc" id="L144" title="1 of 2 branches missed.">            if (order != null) {</span>
+<span class="fc" id="L145">                session.delete(order);</span>
+            }
+<span class="fc" id="L147">            transaction.commit();</span>
+<span class="fc" id="L148">        } catch (Exception e) {</span>
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">            if (transaction != null) {</span>
+<span class="fc" id="L150">                transaction.rollback();</span>
+            }
+<span class="fc" id="L152">            e.printStackTrace();</span>
+        } finally {
+<span class="pc bpc" id="L154" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L155">                session.close();</span>
+            }
+        }
+<span class="fc" id="L158">    }</span>
+
+    public void updateOrderStatusToCompleted(Integer orderId) {
+<span class="fc" id="L161">        Transaction transaction = null;</span>
+<span class="fc" id="L162">        Session session = null;</span>
+        try {
+<span class="fc" id="L164">            session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L165">            transaction = session.beginTransaction();</span>
+<span class="fc" id="L166">            Orders order = (Orders) session.get(Orders.class, orderId);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">            if (order != null) {</span>
+<span class="fc" id="L168">                order.setStatus(&quot;completed&quot;);</span>
+<span class="fc" id="L169">                session.update(order);</span>
+<span class="fc" id="L170">                transaction.commit();</span>
+<span class="fc" id="L171">                FacesContext.getCurrentInstance().addMessage(null,</span>
+                        new FacesMessage(FacesMessage.SEVERITY_INFO, &quot;Success&quot;, &quot;Order status updated to completed&quot;));
+            } else {
+<span class="fc" id="L174">                FacesContext.getCurrentInstance().addMessage(null,</span>
+                        new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Order not found&quot;));
+            }
+<span class="fc" id="L177">        } catch (Exception e) {</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">            if (transaction != null) {</span>
+<span class="fc" id="L179">                transaction.rollback();</span>
+            }
+<span class="fc" id="L181">            e.printStackTrace();</span>
+<span class="fc" id="L182">            FacesContext.getCurrentInstance().addMessage(null,</span>
+                    new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Failed to update order status&quot;));
+        } finally {
+<span class="pc bpc" id="L185" title="4 of 6 branches missed.">            if (session != null) {</span>
+<span class="pc" id="L186">                session.close();</span>
+            }
+        }
+<span class="fc" id="L189">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>PaymentHandlerBean.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;CoffeeShopManagement&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">beans</a> &gt; <span class="el_source">PaymentHandlerBean.java</span></div><h1>PaymentHandlerBean.java</h1><pre class="source lang-java linenums">package beans;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ManagedProperty;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import javax.servlet.http.HttpServletResponse;
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import pojo.CoffeShopUtil;
+import pojo.Orders;
+import pojo.Payment;
+
+@ManagedBean
+@ViewScoped
+<span class="fc" id="L21">public class PaymentHandlerBean implements Serializable {</span>
+
+    @ManagedProperty(value = &quot;#{cartBean}&quot;)
+    private CartBean cartBean;
+
+    private String paymentMethod;
+
+    public String processPayment() {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (cartBean.isCartEmpty()) {</span>
+<span class="fc" id="L30">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Your cart is empty. Cannot process payment.&quot;));</span>
+<span class="fc" id="L31">            return null;</span>
+        }
+<span class="pc bpc" id="L33" title="1 of 4 branches missed.">        if (paymentMethod == null || paymentMethod.isEmpty()) {</span>
+            // Handle error: payment method not selected
+<span class="fc" id="L35">            return null;</span>
+        }
+
+<span class="fc" id="L38">        Session session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L39">        Transaction tx = null;</span>
+
+        try {
+<span class="fc" id="L42">            tx = session.beginTransaction();</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            for (Orders order : cartBean.getCartItems()) {</span>
+<span class="fc" id="L45">                order.setStatus(&quot;pending&quot;);</span>
+<span class="fc" id="L46">                session.update(order);</span>
+
+<span class="fc" id="L48">                Payment payment = new Payment();</span>
+<span class="fc" id="L49">                payment.setOrders(order);</span>
+<span class="fc" id="L50">                payment.setPaymentMethod(paymentMethod);</span>
+<span class="fc" id="L51">                payment.setPaymentDate(new Date());</span>
+<span class="fc" id="L52">                payment.setAmountPaid(order.getTotalPrice());</span>
+<span class="fc" id="L53">                session.save(payment);</span>
+<span class="fc" id="L54">            }</span>
+
+<span class="fc" id="L56">            tx.commit();</span>
+            
+            // Store the payment method in the session
+<span class="fc" id="L59">            FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put(&quot;lastPaymentMethod&quot;, paymentMethod);</span>
+
+            // Clear the cart after successful payment
+<span class="fc" id="L62">            cartBean.clearCart();</span>
+
+<span class="fc" id="L64">            return &quot;paymentSuccess?faces-redirect=true&quot;;</span>
+<span class="fc" id="L65">        } catch (Exception e) {</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">            if (tx != null) {</span>
+<span class="fc" id="L67">                tx.rollback();</span>
+            }
+<span class="fc" id="L69">            e.printStackTrace();</span>
+<span class="fc" id="L70">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;An error occurred during payment processing.&quot;));</span>
+<span class="fc" id="L71">            return null;</span>
+        } finally {
+<span class="pc" id="L73">            session.close();</span>
+        }
+    }
+
+    public void downloadReceipt() {
+        // Generate receipt content (you may want to use a template engine in a real application)
+<span class="fc" id="L79">        String receiptContent = generateReceiptContent();</span>
+
+<span class="fc" id="L81">        FacesContext facesContext = FacesContext.getCurrentInstance();</span>
+<span class="fc" id="L82">        HttpServletResponse response = (HttpServletResponse) facesContext.getExternalContext().getResponse();</span>
+
+<span class="fc" id="L84">        response.setContentType(&quot;text/plain&quot;);</span>
+<span class="fc" id="L85">        response.setHeader(&quot;Content-Disposition&quot;, &quot;attachment;filename=receipt.txt&quot;);</span>
+
+        try {
+<span class="nc" id="L88">            response.getOutputStream().write(receiptContent.getBytes());</span>
+<span class="nc" id="L89">            response.getOutputStream().flush();</span>
+<span class="nc" id="L90">            response.getOutputStream().close();</span>
+<span class="nc" id="L91">            facesContext.responseComplete();</span>
+<span class="fc" id="L92">        } catch (Exception e) {</span>
+<span class="fc" id="L93">            e.printStackTrace();</span>
+<span class="nc" id="L94">        }</span>
+<span class="fc" id="L95">    }</span>
+
+    private String generateReceiptContent() {
+<span class="fc" id="L98">        StringBuilder receipt = new StringBuilder();</span>
+<span class="fc" id="L99">        receipt.append(&quot;Payment Receipt\n&quot;);</span>
+<span class="fc" id="L100">        receipt.append(&quot;Date: &quot;).append(new Date()).append(&quot;\n&quot;);</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        receipt.append(&quot;Payment Method: &quot;).append(paymentMethod != null ? paymentMethod : &quot;Unknown&quot;).append(&quot;\n&quot;);</span>
+<span class="fc" id="L102">        receipt.append(&quot;Items:\n&quot;);</span>
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        for (CartBean.OrderInfo orderInfo : cartBean.getLastOrderInfo()) {</span>
+<span class="fc" id="L105">            receipt.append(orderInfo.getMenuName())</span>
+<span class="fc" id="L106">                    .append(&quot; x &quot;).append(orderInfo.getQuantity())</span>
+<span class="fc" id="L107">                    .append(&quot; = &quot;).append(orderInfo.getTotalPrice()).append(&quot;\n&quot;);</span>
+<span class="fc" id="L108">        }</span>
+
+<span class="fc" id="L110">        receipt.append(&quot;Total: &quot;).append(cartBean.getLastOrderTotal()).append(&quot;\n&quot;);</span>
+
+<span class="fc" id="L112">        return receipt.toString();</span>
+    }
+    
+    @PostConstruct
+    public void init() {
+        // Retrieve the payment method from the session when the bean is created
+<span class="nc" id="L118">        this.paymentMethod = (String) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get(&quot;lastPaymentMethod&quot;);</span>
+<span class="nc" id="L119">    }</span>
+
+    // Getters and setters
+    public void setCartBean(CartBean cartBean) {
+<span class="fc" id="L123">        this.cartBean = cartBean;</span>
+<span class="fc" id="L124">    }</span>
+
+    public String getPaymentMethod() {
+<span class="fc" id="L127">        return paymentMethod;</span>
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+<span class="fc" id="L131">        this.paymentMethod = paymentMethod;</span>
+<span class="fc" id="L132">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MenuBean.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;CoffeeShopManagement&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">beans</a> &gt; <span class="el_source">MenuBean.java</span></div><h1>MenuBean.java</h1><pre class="source lang-java linenums">package beans;
+
+import DAO.DAOMenu;
+import java.io.Serializable;
+import pojo.Menu;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.bean.ManagedBean;
+import javax.faces.context.FacesContext;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+import javax.faces.bean.ViewScoped;
+import java.util.logging.Logger;
+
+@ManagedBean(name = &quot;menuBean&quot;)
+@ViewScoped
+public class MenuBean implements Serializable {
+    
+<span class="fc" id="L20">    private static final Logger LOGGER = Logger.getLogger(MenuBean.class.getName());</span>
+
+
+<span class="fc" id="L23">    private Menu menu = new Menu();</span>
+<span class="fc" id="L24">    private DAOMenu daoMenu = new DAOMenu();</span>
+    private List&lt;Menu&gt; menuList;
+    private Integer selectedMenuId;
+
+    // Constructor untuk menginisialisasi daftar menu
+<span class="fc" id="L29">    public MenuBean() {</span>
+<span class="fc" id="L30">        LOGGER.log(Level.INFO, &quot;Initializing MenuBean&quot;);</span>
+<span class="fc" id="L31">        menuList = daoMenu.findAll(); // Ambil semua data menu saat bean diinisialisasi</span>
+<span class="fc" id="L32">    }</span>
+
+    // Getters and Setters
+    public Menu getMenu() {
+<span class="fc" id="L36">        return menu;</span>
+    }
+
+    public void setMenu(Menu menu) {
+<span class="fc" id="L40">        this.menu = menu;</span>
+<span class="fc" id="L41">    }</span>
+
+    public List&lt;Menu&gt; getMenuList() {
+<span class="fc" id="L44">        return menuList;</span>
+    }
+
+    public Integer getSelectedMenuId() {
+<span class="fc" id="L48">        return selectedMenuId;</span>
+    }
+
+    public void setSelectedMenuId(Integer selectedMenuId) {
+<span class="fc" id="L52">        this.selectedMenuId = selectedMenuId;</span>
+<span class="fc" id="L53">    }</span>
+
+    public List&lt;Menu&gt; getMainDishes() {
+<span class="fc" id="L56">        return menuList.stream()</span>
+<span class="fc" id="L57">                .filter(m -&gt; &quot;Main Dish&quot;.equals(m.getCategory()))</span>
+<span class="fc" id="L58">                .collect(Collectors.toList());</span>
+    }
+
+    public List&lt;Menu&gt; getDrinks() {
+<span class="fc" id="L62">        return menuList.stream()</span>
+<span class="fc" id="L63">                .filter(m -&gt; &quot;Drinks&quot;.equals(m.getCategory()))</span>
+<span class="fc" id="L64">                .collect(Collectors.toList());</span>
+    }
+
+    public List&lt;Menu&gt; getDesserts() {
+<span class="fc" id="L68">        return menuList.stream()</span>
+<span class="fc" id="L69">                .filter(m -&gt; &quot;Desserts&quot;.equals(m.getCategory()))</span>
+<span class="fc" id="L70">                .collect(Collectors.toList());</span>
+    }
+
+    // Fungsi untuk menyimpan data menu
+    public String save() {
+        try {
+<span class="fc" id="L76">            LOGGER.log(Level.INFO, &quot;Attempting to save menu: {0}&quot;, menu.getName());</span>
+<span class="fc" id="L77">            daoMenu.save(menu);</span>
+<span class="fc" id="L78">            LOGGER.log(Level.INFO, &quot;Menu saved successfully: {0}&quot;, menu.getName());</span>
+<span class="fc" id="L79">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, &quot;Success&quot;, &quot;Menu saved successfully.&quot;));</span>
+<span class="fc" id="L80">            refreshMenuList();</span>
+<span class="fc" id="L81">            return &quot;MenuData?faces-redirect=true&quot;;</span>
+<span class="fc" id="L82">        } catch (Exception e) {</span>
+<span class="fc" id="L83">            LOGGER.log(Level.SEVERE, &quot;Error saving menu: &quot; + menu.getName(), e);</span>
+<span class="fc" id="L84">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Failed to save menu: &quot; + e.getMessage()));</span>
+<span class="fc" id="L85">            return null;</span>
+        }
+    }
+
+    // Fungsi untuk memulai proses edit menu
+    public String editMenu(Integer menuId) {
+<span class="fc" id="L91">        this.selectedMenuId = menuId;</span>
+<span class="fc" id="L92">        return &quot;EditMenu?faces-redirect=true&amp;amp;includeViewParams=true&amp;amp;menuId=&quot; + menuId;</span>
+    }
+
+    // Fungsi untuk mengupdate menu yang sudah diedit
+    public String updateMenu() {
+        try {
+<span class="fc" id="L98">            LOGGER.log(Level.INFO, &quot;Attempting to update menu: {0}&quot;, menu.getName());</span>
+<span class="pc bpc" id="L99" title="1 of 4 branches missed.">            if (this.menu.getMenuId() == null || !this.menu.getMenuId().equals(this.selectedMenuId)) {</span>
+<span class="fc" id="L100">                LOGGER.log(Level.WARNING, &quot;Invalid menu ID. Expected: {0}, Actual: {1}&quot;, new Object[]{this.selectedMenuId, this.menu.getMenuId()});</span>
+<span class="fc" id="L101">                throw new IllegalStateException(&quot;Invalid menu ID&quot;);</span>
+            }
+<span class="fc" id="L103">            daoMenu.update(menu);</span>
+<span class="fc" id="L104">            LOGGER.log(Level.INFO, &quot;Menu updated successfully: {0}&quot;, menu.getName());</span>
+<span class="fc" id="L105">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, &quot;Success&quot;, &quot;Menu updated successfully&quot;));</span>
+<span class="fc" id="L106">            refreshMenuList();</span>
+<span class="fc" id="L107">            return &quot;MenuData?faces-redirect=true&quot;;</span>
+<span class="fc" id="L108">        } catch (Exception e) {</span>
+<span class="fc" id="L109">            LOGGER.log(Level.SEVERE, &quot;Error updating menu: &quot; + menu.getName(), e);</span>
+<span class="fc" id="L110">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Failed to update menu: &quot; + e.getMessage()));</span>
+<span class="fc" id="L111">            return null;</span>
+        }
+    }
+
+    // Fungsi untuk menghapus menu
+    public void deleteMenu(Integer menuId) {
+        try {
+<span class="fc" id="L118">            daoMenu.delete(menuId);</span>
+<span class="fc" id="L119">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, &quot;Success&quot;, &quot;Menu deleted successfully&quot;));</span>
+<span class="fc" id="L120">            refreshMenuList();</span>
+<span class="fc" id="L121">        } catch (Exception e) {</span>
+<span class="fc" id="L122">            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Failed to delete menu&quot;));</span>
+<span class="fc" id="L123">        }</span>
+<span class="fc" id="L124">    }</span>
+
+    // Fungsi untuk memuat menu berdasarkan ID (dipanggil saat halaman edit dimuat)
+    public void loadMenu() {
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (selectedMenuId != null) {</span>
+<span class="fc" id="L129">            LOGGER.log(Level.INFO, &quot;Loading menu with ID: {0}&quot;, selectedMenuId);</span>
+<span class="fc" id="L130">            menu = daoMenu.findById(selectedMenuId);</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">            if (menu == null) {</span>
+<span class="fc" id="L132">                LOGGER.log(Level.WARNING, &quot;Menu not found for ID: {0}&quot;, selectedMenuId);</span>
+<span class="fc" id="L133">                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, &quot;Error&quot;, &quot;Menu not found&quot;));</span>
+            } else {
+<span class="fc" id="L135">                LOGGER.log(Level.INFO, &quot;Menu loaded successfully: {0}&quot;, menu.getName());</span>
+            }
+        }
+<span class="fc" id="L138">    }</span>
+
+    // Helper method untuk merefresh daftar menu
+    private void refreshMenuList() {
+<span class="fc" id="L142">        LOGGER.log(Level.INFO, &quot;Refreshing menu list&quot;);</span>
+<span class="fc" id="L143">        menuList = daoMenu.findAll();</span>
+<span class="fc" id="L144">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

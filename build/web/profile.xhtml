@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Coffee - User Profile</title>
+        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
+    </h:head>
+    <h:body>
+        <ui:composition template="FrontendLayout.xhtml">
+            <ui:define name="content"> 
+                <h:form>
+                    <section class="home-slider owl-carousel">
+                        <div class="slider-item" style="background-image: url(frontend/images/bg_3.jpg);" data-stellar-background-ratio="0.5">
+                            <div class="overlay"></div>
+                            <div class="container">
+                                <div class="row slider-text justify-content-center align-items-center">
+                                    <div class="col-md-7 col-sm-12 text-center ftco-animate">
+                                        <h1 class="mb-3 mt-5 bread">Profile</h1>
+                                        <p class="breadcrumbs"><span class="mr-2"><h:commandLink value="Home" action="index?faces-redirect=true" /></span>
+                                            <span>Profile</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </h:form>
+
+                <!-- Display user data -->
+                <section class="ftco-section">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-md-6">
+                                <h3 class="text-center mb-4">User Profile</h3>
+
+                                <div class="form-group">
+                                    <label for="name">Name:</label>
+                                    <h:outputText id="name" value="#{userBean.currentUser.name}" class="form-control" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="email">Email:</label>
+                                    <h:outputText id="email" value="#{userBean.currentUser.email}" class="form-control" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="phone">Phone Number:</label>
+                                    <h:outputText id="phone" value="#{userBean.currentUser.phoneNumber}" class="form-control" />
+                                </div>
+
+                                <div class="text-center">
+                                    <h:form>
+                                        <h:commandButton value="Logout" action="#{userBean.logout}" class="btn btn-secondary"/>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

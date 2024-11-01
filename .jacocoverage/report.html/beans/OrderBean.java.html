@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>OrderBean.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;CoffeeShopManagement&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">beans</a> &gt; <span class="el_source">OrderBean.java</span></div><h1>OrderBean.java</h1><pre class="source lang-java linenums">package beans;
+
+import DAO.DAOOrders;
+import pojo.Orders;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import java.util.List;
+
+@ManagedBean
+@ViewScoped
+public class OrderBean {
+
+<span class="fc" id="L15">    private Orders order = new Orders();</span>
+<span class="fc" id="L16">    private DAOOrders daoOrders = new DAOOrders();</span>
+    private List&lt;Orders&gt; orderList;
+    private List&lt;Orders&gt; pendingOrders;
+    private List&lt;Orders&gt; completedOrders;
+
+<span class="fc" id="L21">    public OrderBean() {</span>
+<span class="fc" id="L22">        orderList = daoOrders.findAll();</span>
+<span class="fc" id="L23">        loadPendingOrders();</span>
+<span class="fc" id="L24">        loadCompletedOrders();</span>
+<span class="fc" id="L25">    }</span>
+    
+    public void setDaoOrders(DAOOrders daoOrders) {
+<span class="fc" id="L28">        this.daoOrders = daoOrders;</span>
+<span class="fc" id="L29">    }</span>
+
+    // Getters and Setters
+    public Orders getOrder() {
+<span class="fc" id="L33">        return order;</span>
+    }
+
+    public void setOrder(Orders order) {
+<span class="fc" id="L37">        this.order = order;</span>
+<span class="fc" id="L38">    }</span>
+
+    public List&lt;Orders&gt; getOrderList() {
+<span class="nc" id="L41">        return orderList;</span>
+    }
+
+    private void loadPendingOrders() {
+<span class="fc" id="L45">        pendingOrders = daoOrders.findPendingOrders();</span>
+<span class="fc" id="L46">    }</span>
+
+    public List&lt;Orders&gt; getPendingOrders() {
+<span class="nc" id="L49">        return pendingOrders;</span>
+    }
+    
+    private void loadCompletedOrders() {
+<span class="fc" id="L53">        completedOrders = daoOrders.findCompletedOrders();</span>
+<span class="fc" id="L54">    }</span>
+
+    public List&lt;Orders&gt; getCompletedOrders() {
+<span class="nc" id="L57">        return completedOrders;</span>
+    }
+
+    public void save() {
+<span class="fc" id="L61">        daoOrders.save(order);</span>
+<span class="fc" id="L62">        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(&quot;Order saved successfully.&quot;));</span>
+<span class="fc" id="L63">        orderList = daoOrders.findAll();</span>
+<span class="fc" id="L64">    }</span>
+
+    public void processOrder(Integer orderId) {
+<span class="fc" id="L67">        daoOrders.updateOrderStatusToCompleted(orderId);</span>
+<span class="fc" id="L68">        loadPendingOrders();</span>
+<span class="fc" id="L69">    }</span>
+
+    public void delete(Long orderId) {
+<span class="fc" id="L72">        daoOrders.delete(orderId);</span>
+<span class="fc" id="L73">        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(&quot;Order deleted successfully.&quot;));</span>
+<span class="fc" id="L74">        orderList = daoOrders.findAll();</span>
+<span class="fc" id="L75">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

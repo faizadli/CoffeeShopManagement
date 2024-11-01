@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 1, 2024 1:24:35 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="pojo.Reservation" table="reservation" catalog="coffee_shop" optimistic-lock="version">
+        <id name="reservationId" type="java.lang.Integer">
+            <column name="reservation_id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="users" class="pojo.Users" fetch="select">
+            <column name="user_id" />
+        </many-to-one>
+        <property name="tableNumber" type="int">
+            <column name="table_number" not-null="true" />
+        </property>
+        <property name="reservationDate" type="date">
+            <column name="reservation_date" length="10" not-null="true" />
+        </property>
+        <property name="reservationTime" type="time">
+            <column name="reservation_time" length="8" not-null="true" />
+        </property>
+        <property name="status" type="string">
+            <column name="status" length="9" />
+        </property>
+        <property name="createdAt" type="timestamp">
+            <column name="created_at" length="19" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

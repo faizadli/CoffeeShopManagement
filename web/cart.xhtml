@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Coffee - Cart</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="FrontendLayout.xhtml">
+            <ui:define name="content">    
+                <section class="ftco-section ftco-cart">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12 ftco-animate">
+                                <h:form id="cart-form">
+                                    <div class="cart-list">
+                                        <table class="table">
+                                            <thead class="thead-primary">
+                                                <tr class="text-center">
+                                                    <th>Product</th>
+                                                    <th>Price</th>
+                                                    <th>Quantity</th>
+                                                    <th>Total</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <ui:repeat value="#{cartBean.cartItems}" var="item">
+                                                    <tr class="text-center">
+                                                        <td class="product-name">
+                                                            <h3>#{item.menu.name}</h3>
+                                                            <p>#{item.menu.description}</p>
+                                                        </td>
+                                                        <td class="price">#{item.menu.price}</td>
+                                                        <td class="quantity">
+                                                            <div class="input-group mb-3">
+                                                                <h:inputText value="#{item.quantity}" class="form-control">
+                                                                    <f:ajax event="change" listener="#{cartBean.updateQuantity(item, item.quantity)}" render="@form :cart-total" />
+                                                                </h:inputText>
+                                                            </div>
+                                                        </td>
+                                                        <td class="total">#{item.totalPrice}</td>
+                                                        <td>
+                                                            <h:commandButton value="Remove" action="#{cartBean.updateQuantity(item, 0)}" class="btn btn-primary">
+                                                                <f:ajax render="@form :cart-total :cart-size" />
+                                                            </h:commandButton>
+                                                        </td>
+                                                    </tr>
+                                                </ui:repeat>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </h:form>
+                            </div>
+                        </div>
+                        <div class="row justify-content-end">
+                            <div class="col col-lg-3 col-md-6 mt-5 cart-wrap ftco-animate">
+                                <div class="cart-total mb-3">
+                                    <h3>Cart Totals</h3>
+                                    <p class="d-flex total-price">
+                                        <span>Total</span>
+                                        <h:panelGroup id="cart-total">
+                                            <span>#{cartBean.cartTotal}</span>
+                                        </h:panelGroup>
+                                        <h:messages globalOnly="true" styleClass="error-message" />
+                                    </p>
+                                </div>
+                                <h:form id="paymentForm">
+                                    <div class="form-group">
+                                        <h:selectOneRadio id="paymentMethod" value="#{paymentHandlerBean.paymentMethod}" layout="pageDirection" required="true">
+                                            <f:selectItem itemValue="cash" itemLabel="Cash (Pay at location)" />
+                                            <f:selectItem itemValue="qris" itemLabel="QRIS" />
+                                            <f:ajax event="change" render="paymentMethod" />
+                                        </h:selectOneRadio>
+                                    </div>
+                                    <h:message for="paymentMethod" style="color: red;" />
+                                    <p class="text-center">
+                                        <h:commandButton value="Proceed to Checkout" action="#{paymentHandlerBean.processPayment}" class="btn btn-primary py-3 px-4">
+                                            <f:ajax execute="@form" render="@form" />
+                                        </h:commandButton>
+                                    </p>
+                                    <h:outputText value="Selected payment method: #{paymentHandlerBean.paymentMethod}" />
+                                </h:form>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

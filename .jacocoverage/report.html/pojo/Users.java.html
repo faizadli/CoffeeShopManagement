@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Users.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;CoffeeShopManagement&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">pojo</a> &gt; <span class="el_source">Users.java</span></div><h1>Users.java</h1><pre class="source lang-java linenums">package pojo;
+
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.*;
+
+@Entity
+@Table(name = &quot;users&quot;)
+public class Users implements java.io.Serializable {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = &quot;user_id&quot;)
+    private Integer userId;
+
+    @Column(name = &quot;name&quot;)
+    private String name;
+
+    @Column(name = &quot;email&quot;)
+    private String email;
+
+    @Column(name = &quot;password&quot;)
+    private String password;
+
+    @Column(name = &quot;phone_number&quot;)
+    private String phoneNumber;
+
+    @Column(name = &quot;role&quot;)
+    private String role;
+
+    @Column(name = &quot;created_at&quot;)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createdAt;
+
+<span class="fc" id="L36">    @OneToMany(fetch = FetchType.LAZY, mappedBy = &quot;user&quot;)</span>
+    private Set orderses = new HashSet(0);
+
+<span class="fc" id="L39">    @OneToMany(fetch = FetchType.LAZY, mappedBy = &quot;user&quot;)</span>
+    private Set reservations = new HashSet(0);
+
+<span class="fc" id="L42">    public Users() {</span>
+<span class="fc" id="L43">    }</span>
+
+<span class="fc" id="L45">    public Users(String name, String email, String password, String phoneNumber, String role) {</span>
+<span class="fc" id="L46">        this.name = name;</span>
+<span class="fc" id="L47">        this.email = email;</span>
+<span class="fc" id="L48">        this.password = password;</span>
+<span class="fc" id="L49">        this.phoneNumber = phoneNumber;</span>
+<span class="fc" id="L50">        this.role = role;</span>
+<span class="fc" id="L51">        this.createdAt = new Date();</span>
+<span class="fc" id="L52">    }</span>
+
+    // Getters and setters
+    public Integer getUserId() {
+<span class="fc" id="L56">        return this.userId;</span>
+    }
+
+    public void setUserId(Integer userId) {
+<span class="fc" id="L60">        this.userId = userId;</span>
+<span class="fc" id="L61">    }</span>
+
+    public String getName() {
+<span class="fc" id="L64">        return this.name;</span>
+    }
+
+    public void setName(String name) {
+<span class="fc" id="L68">        this.name = name;</span>
+<span class="fc" id="L69">    }</span>
+
+    public String getEmail() {
+<span class="fc" id="L72">        return this.email;</span>
+    }
+
+    public void setEmail(String email) {
+<span class="fc" id="L76">        this.email = email;</span>
+<span class="fc" id="L77">    }</span>
+
+    public String getPassword() {
+<span class="fc" id="L80">        return this.password;</span>
+    }
+
+    public void setPassword(String password) {
+<span class="fc" id="L84">        this.password = password;</span>
+<span class="fc" id="L85">    }</span>
+
+    public String getPhoneNumber() {
+<span class="fc" id="L88">        return this.phoneNumber;</span>
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+<span class="fc" id="L92">        this.phoneNumber = phoneNumber;</span>
+<span class="fc" id="L93">    }</span>
+
+    public String getRole() {
+<span class="fc" id="L96">        return this.role;</span>
+    }
+
+    public void setRole(String role) {
+<span class="fc" id="L100">        this.role = role;</span>
+<span class="fc" id="L101">    }</span>
+
+    public Date getCreatedAt() {
+<span class="fc" id="L104">        return this.createdAt;</span>
+    }
+
+    public void setCreatedAt(Date createdAt) {
+<span class="fc" id="L108">        this.createdAt = createdAt;</span>
+<span class="fc" id="L109">    }</span>
+
+    public Set getOrderses() {
+<span class="fc" id="L112">        return this.orderses;</span>
+    }
+
+    public void setOrderses(Set orderses) {
+<span class="fc" id="L116">        this.orderses = orderses;</span>
+<span class="fc" id="L117">    }</span>
+
+    public Set getReservations() {
+<span class="fc" id="L120">        return this.reservations;</span>
+    }
+
+    public void setReservations(Set reservations) {
+<span class="fc" id="L124">        this.reservations = reservations;</span>
+<span class="fc" id="L125">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

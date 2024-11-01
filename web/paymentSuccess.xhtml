@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Coffee - Payment Success</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="FrontendLayout.xhtml">
+            <ui:define name="content">    
+                <section class="ftco-section">
+                    <div class="container">
+                        <div class="row justify-content-center">
+                            <div class="col-md-8 ftco-animate">
+                                <h2 class="mb-4">Payment Successful!</h2>
+                                <p>Thank you for your purchase. Your order has been completed successfully.</p>
+
+                                <h:outputText value="Payment Method: #{paymentHandlerBean.paymentMethod}" />
+
+                                <h:form>
+                                    <h:commandButton value="Download Receipt" action="#{paymentHandlerBean.downloadReceipt}" class="btn btn-primary py-2 px-3" />
+                                </h:form>
+
+                                <p class="mt-4">
+                                    <h:link outcome="index" value="Return to Home" class="btn btn-secondary py-2 px-3" />
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated Oct 1, 2024 1:24:35 PM by Hibernate Tools 4.3.1 -->
+<hibernate-mapping>
+    <class name="pojo.Payment" table="payment" catalog="coffee_shop" optimistic-lock="version">
+        <id name="paymentId" type="java.lang.Integer">
+            <column name="payment_id" />
+            <generator class="identity" />
+        </id>
+        <many-to-one name="orders" class="pojo.Orders" fetch="select">
+            <column name="order_id" />
+        </many-to-one>
+        <property name="paymentMethod" type="string">
+            <column name="payment_method" length="5" not-null="true" />
+        </property>
+        <property name="paymentDate" type="timestamp">
+            <column name="payment_date" length="19" not-null="true" />
+        </property>
+        <property name="amountPaid" type="big_decimal">
+            <column name="amount_paid" precision="10" not-null="true" />
+        </property>
+    </class>
+</hibernate-mapping>

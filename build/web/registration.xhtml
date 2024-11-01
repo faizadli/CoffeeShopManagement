@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Coffee - Registration</title>
+    </h:head>
+    <h:body>
+        <f:event type="preRenderView" listener="#{userBean.checkIfLoggedIn}" />
+        
+        <ui:composition template="FrontendLayout.xhtml">
+            <ui:define name="content"> 
+                <h:form>
+                    
+                    <section class="home-slider owl-carousel">
+                        <div class="slider-item" style="background-image: url(frontend/images/bg_3.jpg);" data-stellar-background-ratio="0.5">
+                            <div class="overlay"></div>
+                            <div class="container">
+                                <div class="row slider-text justify-content-center align-items-center">
+                                    <div class="col-md-7 col-sm-12 text-center ftco-animate">
+                                        <h1 class="mb-3 mt-5 bread">Registration</h1>
+                                        <p class="breadcrumbs"><span class="mr-2"><h:commandLink value="Home" action="index?faces-redirect=true" /></span>
+                                            <span>Create Account</span></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </h:form>
+                
+                <h:form>      
+                    <section class="ftco-section contact-section">
+                        <div class="container mt-5">
+                            <div class="row block-9">
+                                <div class="col-md-4 contact-info ftco-animate">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-4">
+                                            <h2 class="h4">Login!!</h2>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <h4><span>The Best Coffee Testing Experience</span> <br/> <p>A small river named Duden flows by their place and supplies it with the
+                                                    necessary regelialia.</p> </h4>
+                                        </div>
+                                        <div class="col-md-12 mb-3">
+                                            <span>Doesn't have account? </span> 
+                                            <br/> 
+                                            <a href="login.xhtml">Login!!</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-1"></div>
+                                <div class="col-md-6 ftco-animate">
+                                    <h:messages globalOnly="true" styleClass="error-message" />
+                                    <h:form class="contact-form">
+                                        <div class="form-group">
+                                            <h:outputLabel for="name" value="Name:" />
+                                            <h:inputText id="name" value="#{userBean.name}" class="form-control" required="true">
+                                                <f:passThroughAttribute name="placeholder" value="Enter your name" />
+                                            </h:inputText>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel for="email" value="Email:" />
+                                            <h:inputText id="email" value="#{userBean.email}" class="form-control" required="true">
+                                                <f:passThroughAttribute name="placeholder" value="Enter your email" />
+                                            </h:inputText>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel for="password" value="Password:" />
+                                            <h:inputSecret id="password" value="#{userBean.password}" class="form-control" required="true">
+                                                <f:passThroughAttribute name="placeholder" value="Enter your password" />
+                                            </h:inputSecret>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:outputLabel for="phoneNumber" value="Phone Number:" />
+                                            <h:inputText id="phoneNumber" value="#{userBean.phoneNumber}" class="form-control" required="true">
+                                                <f:passThroughAttribute name="placeholder" value="Enter your phone number" />
+                                            </h:inputText>
+                                        </div>
+                                        <div class="form-group">
+                                            <h:commandButton value="Register" action="#{userBean.register}" class="btn btn-primary py-3 px-5" />
+                                        </div>
+                                    </h:form>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </h:form>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

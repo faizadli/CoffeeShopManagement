@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>DAOUser.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JaCoCoverage analysis of project &quot;CoffeeShopManagement&quot; (powered by JaCoCo from EclEmma)</a> &gt; <a href="index.source.html" class="el_package">DAO</a> &gt; <span class="el_source">DAOUser.java</span></div><h1>DAOUser.java</h1><pre class="source lang-java linenums">package DAO;
+
+import org.hibernate.Session;
+import org.hibernate.Transaction;
+import pojo.CoffeShopUtil;
+import pojo.Users;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+<span class="fc" id="L10">public class DAOUser {</span>
+
+<span class="fc" id="L12">    private static final Logger logger = Logger.getLogger(DAOUser.class.getName());</span>
+
+    public boolean save(Users user) {
+<span class="fc" id="L15">        Session session = CoffeShopUtil.getSessionFactory().openSession();</span>
+<span class="fc" id="L16">        Transaction tx = null;</span>
+
+        try {
+<span class="fc" id="L19">            tx = session.beginTransaction();</span>
+<span class="fc" id="L20">            session.save(user);</span>
+<span class="fc" id="L21">            tx.commit();</span>
+<span class="fc" id="L22">            logger.info(&quot;User saved successfully: &quot; + user.getEmail());</span>
+<span class="fc" id="L23">            return true;</span>
+<span class="fc" id="L24">        } catch (Exception e) {</span>
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">            if (tx != null) {</span>
+<span class="fc" id="L26">                tx.rollback();</span>
+            }
+<span class="fc" id="L28">            logger.log(Level.SEVERE, &quot;Error saving user: &quot; + user.getEmail(), e);</span>
+<span class="fc" id="L29">            return false;</span>
+        } finally {
+<span class="pc" id="L31">            session.close();</span>
+        }
+    }
+
+    public Users findByEmail(String email) {
+<span class="fc" id="L36">        Session session = CoffeShopUtil.getSessionFactory().openSession();</span>
+        try {
+<span class="fc" id="L38">            Users user = (Users) session.createQuery(&quot;FROM Users WHERE email = :email&quot;)</span>
+<span class="fc" id="L39">                    .setParameter(&quot;email&quot;, email)</span>
+<span class="fc" id="L40">                    .uniqueResult();</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">            if (user != null) {</span>
+<span class="fc" id="L42">                logger.info(&quot;User found with email: &quot; + email);</span>
+            } else {
+<span class="fc" id="L44">                logger.info(&quot;No user found with email: &quot; + email);</span>
+            }
+<span class="fc" id="L46">            return user;</span>
+<span class="fc" id="L47">        } catch (Exception e) {</span>
+<span class="fc" id="L48">            logger.log(Level.SEVERE, &quot;Error finding user by email: &quot; + email, e);</span>
+<span class="fc" id="L49">            return null;</span>
+        } finally {
+<span class="pc" id="L51">            session.close();</span>
+        }
+    }
+
+    // Add other CRUD operations as needed
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
